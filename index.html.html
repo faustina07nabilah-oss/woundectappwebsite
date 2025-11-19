@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOUNDECT-APP | Solusi Pertolongan Pertama Cepat</title>
+    <!-- Tailwind CSS CDN untuk styling yang responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Menggunakan font Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+        }
+        /* Style untuk simulasi tombol scan */
+        #scan-input {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Navbar/Header -->
+    <header class="bg-teal-600 shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-white tracking-wider">
+                WOUNDECT-APP
+            </div>
+            <nav class="hidden md:flex space-x-4">
+                <a href="#" onclick="showSection('home')" class="text-white hover:text-teal-200 transition duration-300 px-3 py-2 rounded-lg">Beranda</a>
+                <a href="#" onclick="showSection('scan')" class="text-white hover:text-teal-200 transition duration-300 px-3 py-2 rounded-lg">Diagnosis Cepat</a>
+                <a href="#" onclick="showSection('first-aid')" class="text-white hover:text-teal-200 transition duration-300 px-3 py-2 rounded-lg">Penanganan Pertama</a>
+            </nav>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="text-white md:hidden focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-teal-700">
+            <a href="#" onclick="showSection('home'); hideMobileMenu()" class="block text-white hover:bg-teal-600 px-4 py-2 border-t border-teal-600">Beranda</a>
+            <a href="#" onclick="showSection('scan'); hideMobileMenu()" class="block text-white hover:bg-teal-600 px-4 py-2 border-t border-teal-600">Diagnosis Cepat</a>
+            <a href="#" onclick="showSection('first-aid'); hideMobileMenu()" class="block text-white hover:bg-teal-600 px-4 py-2 border-t border-teal-600">Penanganan Pertama</a>
+        </div>
+    </header>
+
+    <!-- Konten Utama -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- 1. Bagian Beranda (Home) -->
+        <section id="home" class="py-12 bg-white rounded-xl shadow-xl transition-all duration-500">
+            <div class="text-center">
+                <h1 class="text-5xl font-extrabold text-gray-800 mb-4">WOUNDECT</h1>
+                <p class="text-xl text-teal-600 mb-8">Panduan Cepat Pertolongan Pertama di Ujung Jari Anda.</p>
+                <div class="max-w-3xl mx-auto text-gray-600">
+                    <p class="mb-4">WOUNDECT-APP membantu Anda dalam situasi darurat dengan menyediakan panduan langkah demi langkah untuk penanganan luka. Fitur utama kami adalah *Diagnosis Cepat* yang mensimulasikan analisis luka berdasarkan gambar yang Anda unggah.</p>
+                    <button onclick="showSection('scan')" class="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Mulai Diagnosis Sekarang
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Bagian Scan/Diagnosis Cepat -->
+        <section id="scan" class="hidden py-12 bg-white rounded-xl shadow-xl transition-all duration-500">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center md:text-left">📸 Diagnosis Cepat Luka</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Kolom Input Scan -->
+                <div class="p-6 border-2 border-dashed border-teal-300 rounded-xl text-center bg-teal-50">
+                    <h3 class="text-xl font-semibold mb-4 text-teal-700">Unggah Gambar Luka Anda</h3>
+                    <label for="scan-input" class="cursor-pointer inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+                        Pilih Gambar
+                    </label>
+                    <input type="file" id="scan-input" accept="image/*" onchange="processScan(event)">
+                    <p class="mt-3 text-sm text-gray-500">Simulasi analisis: JPEG, PNG</p>
+
+                    <div id="preview-area" class="mt-6 hidden">
+                        <img id="image-preview" class="max-w-full h-auto rounded-lg shadow-md mx-auto" alt="Pratinjau Gambar">
+                        <p class="mt-2 text-sm font-medium text-teal-700">Gambar berhasil dimuat. Klik "Analisis"!</p>
+                        <button onclick="analyzeWound()" class="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-full transition duration-300">
+                            Lakukan Analisis
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kolom Hasil Analisis -->
+                <div id="result-area" class="p-6 bg-gray-100 rounded-xl shadow-md hidden">
+                    <h3 class="text-2xl font-bold text-red-600 mb-4">Hasil Diagnosis (Simulasi)</h3>
+                    <div id="analysis-content" class="space-y-4">
+                        <!-- Hasil akan dimuat di sini -->
+                    </div>
+                    <button onclick="showSection('first-aid')" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                        Lihat Panduan Pertolongan Pertama
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Bagian Penanganan Pertama (First Aid) -->
+        <section id="first-aid" class="hidden py-12 bg-white rounded-xl shadow-xl transition-all duration-500">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center md:text-left">🩹 Panduan Penanganan Pertama</h2>
+
+            <div class="space-y-6">
+                <!-- Item Penanganan Pertama 1: Luka Sayat Kecil -->
+                <div class="p-6 border-l-4 border-teal-500 bg-teal-50 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-teal-700 mb-2">1. Luka Sayat atau Lecet Kecil</h3>
+                    <p class="text-gray-600 mb-3">Ini adalah jenis luka paling umum. Penanganan yang cepat dapat mencegah infeksi. </p>
+                    <ol class="list-decimal list-inside text-gray-600 space-y-2">
+                        <li>*Cuci Tangan:* Bersihkan tangan Anda dengan sabun dan air.</li>
+                        <li>*Hentikan Pendarahan:* Tekan lembut luka dengan kain kasa atau kain bersih selama 5-10 menit.</li>
+                        <li>*Bersihkan Luka:* Cuci luka dengan air mengalir dan sabun lembut. Gunakan pinset yang sudah disterilkan untuk menghilangkan kotoran.</li>
+                        <li>*Oleskan Salep:* Berikan sedikit salep antibiotik untuk mencegah infeksi.</li>
+                        <li>*Tutup Luka:* Tutup dengan plester atau perban steril. Ganti perban setiap hari.</li>
+                    </ol>
+                </div>
+
+                <!-- Item Penanganan Pertama 2: Luka Bakar Ringan -->
+                <div class="p-6 border-l-4 border-red-500 bg-red-50 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-red-700 mb-2">2. Luka Bakar Tingkat Satu (Ringan)</h3>
+                    <p class="text-gray-600 mb-3">Luka bakar tingkat satu hanya mempengaruhi lapisan luar kulit dan menyebabkan kemerahan serta nyeri ringan. </p>
+                    <ol class="list-decimal list-inside text-gray-600 space-y-2">
+                        <li>*Dinginkan:* Segera rendam area yang terbakar dalam air dingin (bukan es) selama 10-15 menit.</li>
+                        <li>*Lepaskan Perhiasan:* Lepaskan cincin atau perhiasan sebelum area membengkak.</li>
+                        <li>*Oleskan Pelembap:* Setelah dingin, oleskan lotion lidah buaya atau pelembap.</li>
+                        <li>*Perban (Opsional):* Tutup dengan perban kasa longgar untuk perlindungan.</li>
+                        <li>*Hindari:* Jangan pernah memecahkan lepuhan atau mengoleskan mentega/minyak.</li>
+                    </ol>
+                </div>
+
+                <!-- Item Penanganan Pertama 3: Pendarahan Hebat -->
+                <div class="p-6 border-l-4 border-amber-500 bg-amber-50 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-amber-700 mb-2">3. Pendarahan Hebat (Penting)</h3>
+                    <p class="text-gray-600 mb-3">Ini adalah situasi darurat medis. Tujuan utama adalah menghentikan kehilangan darah. </p>
+                    <ol class="list-decimal list-inside text-gray-600 space-y-2">
+                        <li>*Tekanan Langsung:* Tekan luka dengan kuat menggunakan perban atau kain bersih.</li>
+                        <li>*Angkat:* Angkat bagian yang terluka di atas level jantung (jika memungkinkan).</li>
+                        <li>*Gunakan Titik Tekan:* Jika pendarahan tidak berhenti, tekan arteri utama di dekat luka (misalnya di lengan atas atau pangkal paha).</li>
+                        <li>*Cari Bantuan:* Segera hubungi layanan darurat (118 atau 119) karena ini situasi kritis.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center p-6 mt-12">
+        <p>&copy; 2024 WOUNDECT-APP. Panduan ini bukan pengganti saran medis profesional. Selalu hubungi ahli kesehatan jika terjadi kondisi serius.</p>
+    </footer>
+
+    <!-- Logika JavaScript Murni -->
+    <script>
+        // Data simulasi diagnosis
+        const DIAGNOSIS_DATA = [
+            { type: 'sayat', title: 'Luka Sayat Ringan', severity: 'Rendah', action: 'Lakukan pembersihan luka (Lihat panduan Penanganan Pertama No. 1). Tutup dengan plester.' },
+            { type: 'bakar', title: 'Luka Bakar Tingkat 1', severity: 'Sedang', action: 'Dinginkan segera di bawah air mengalir. Oleskan Aloe Vera. (Lihat panduan No. 2).' },
+            { type: 'tusuk', title: 'Luka Tusuk (Perlu Pemeriksaan)', severity: 'Tinggi', action: 'Hentikan pendarahan. Jangan cabut benda yang menusuk! Segera cari bantuan medis darurat! (Lihat panduan No. 3).' },
+            { type: 'default', title: 'Luka Lecet Biasa', severity: 'Rendah', action: 'Bersihkan dengan sabun dan air. Biarkan mengering. Tidak perlu ditutup jika lecet kecil.' }
+        ];
+
+        // --- FUNGSI NAVIGASI ---
+        function showSection(sectionId) {
+            // Sembunyikan semua section
+            const sections = ['home', 'scan', 'first-aid'];
+            sections.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            // Tampilkan section yang diminta
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            // Gulirkan ke atas halaman
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- FUNGSI MOBILE MENU ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        function hideMobileMenu() {
+             mobileMenu.classList.add('hidden');
+        }
+
+        // --- FUNGSI SIMULASI SCAN/ANALISIS ---
+        let selectedWoundType = 'default';
+
+        function processScan(event) {
+            const file = event.target.files[0];
+            const previewArea = document.getElementById('preview-area');
+            const imagePreview = document.getElementById('image-preview');
+            document.getElementById('result-area').classList.add('hidden'); // Sembunyikan hasil lama
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewArea.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+
+                // SIMULASI: Tentukan jenis luka secara acak
+                const types = ['sayat', 'bakar', 'tusuk', 'default'];
+                selectedWoundType = types[Math.floor(Math.random() * types.length)];
+                console.log(`[SIMULASI] Jenis luka terdeteksi: ${selectedWoundType}`);
+
+            } else {
+                previewArea.classList.add('hidden');
+            }
+        }
+
+        function analyzeWound() {
+            const resultArea = document.getElementById('result-area');
+            const contentDiv = document.getElementById('analysis-content');
+
+            // Dapatkan data dari array simulasi
+            const result = DIAGNOSIS_DATA.find(data => data.type === selectedWoundType);
+
+            if (result) {
+                // Tentukan warna keparahan
+                let severityColor = 'text-green-500';
+                if (result.severity === 'Sedang') {
+                    severityColor = 'text-orange-500';
+                } else if (result.severity === 'Tinggi') {
+                    severityColor = 'text-red-500';
+                }
+
+                contentDiv.innerHTML = `
+                    <div class="p-4 bg-white rounded-lg border-2 border-red-200">
+                        <p class="text-xl font-bold text-red-600">${result.title}</p>
+                        <p class="text-sm text-gray-500">Tingkat Keparahan: <span class="font-semibold ${severityColor}">${result.severity}</span></p>
+                        <hr class="my-3">
+                        <h4 class="font-semibold text-gray-700">Tindakan Rekomendasi:</h4>
+                        <p class="text-lg text-gray-800 mt-2">${result.action}</p>
+                    </div>
+                `;
+                resultArea.classList.remove('hidden');
+            } else {
+                contentDiv.innerHTML = '<p class="text-red-500">Gagal menganalisis. Coba lagi.</p>';
+                resultArea.classList.remove('hidden');
+            }
+
+            // Gulir ke area hasil
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Inisialisasi: Tampilkan halaman Beranda saat pertama kali dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection('home');
+        });
+
+    </script>
+</body>
+</html>
